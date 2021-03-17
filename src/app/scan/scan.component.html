@@ -1,0 +1,232 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-lg-8 col-xl-6  order-lg-first order-sm-last">
+      <!-- <input type="file" (change)="fileChangeEvent($event)"> -->
+      <div *ngIf="blurring" 
+        style="display: flex;"
+        class="alert alert-dismissible alert-info fade show" role="alert">
+        <span class="material-icons" style="font-size: 1.55rem; margin-right: 5px;">info</span> 
+        <span style="text-align: center; width: 100%">Click document area to place blur.  Size and position can be changed.</span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="image-container">
+        <div class="image-controls">
+          <a (click)="crop()">
+            <span class="material-icons">crop</span> <br />
+            Crop
+          </a>
+          <a (click)="rotate('left')">
+            <span class="material-icons">rotate_left</span>
+            Rotate Left
+          </a>
+          <a  (click)="rotate('right')">
+            <span class="material-icons">rotate_right</span>
+            Rotate Right
+          </a>
+          <a  (click)="mirror()">
+            <span class="material-icons">swap_horiz</span>
+            Mirror
+          </a>
+          <a  (click)="flip()">
+            <span class="material-icons">swap_vert</span>
+            Flip
+          </a>
+          <a  (click)="zoom('in')">
+            <span class="material-icons" >zoom_in</span>
+            Zoom In
+          </a>
+          <a  (click)="zoom('out')">
+            <span class="material-icons">zoom_out</span>
+            Zoom Out
+          </a>
+          <a  (click)="doRatio()">
+            <span class="material-icons">aspect_ratio</span>
+            {{containWithinAspectRatio ? 'Contain' : 'Fill'}}
+          </a>
+          <a (click)="resetImage()">
+            <span class="material-icons">backspace</span>
+            Reset Image
+          </a>
+        </div>
+        
+        <div class="scanned-doc-container" id="scanned-doc-container" [class.hideCropper]="hideCropper">
+          <image-cropper *ngIf="imageBase64"
+            [imageBase64]="imageBase64"
+            (imageCropped)="imageCropped($event)"
+            format="jpeg"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="3 /4"
+            [autoCrop]="true"
+            [transform]="transformImage"
+            [imageQuality]="100"
+            [onlyScaleDown]="true"
+            [roundCropper]="false"
+            [canvasRotation]="canvasRotation"
+            [containWithinAspectRatio]="containWithinAspectRatio"
+          ></image-cropper>
+          
+        </div>
+
+        <div class="image-controls">
+          <a  (click)="doBlur()">
+            <span class="material-icons">lens_blur</span>
+            Blur
+          </a>
+          <a>
+            <span class="material-icons">drive_file_rename_outline</span>
+            Annotate
+          </a>
+          <a (click)="doOcr()">
+            <span class="material-icons">read_more</span>
+            OCR
+          </a>
+        </div>
+
+      </div>
+      <div class="image-pager">
+        <div class="pager">
+          <a style="cursor: pointer;" (click)="imagePager(-1)"><span class="material-icons" style="font-size: 50px; color: #007bff;">chevron_left</span></a>
+          <a style="cursor: pointer;" (click)="imagePager(1)"><span class="material-icons" style="font-size: 50px; color: #007bff;">chevron_right</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-lg-4 offset-xl-2  order-lg-last order-sm-first">
+      <div class="controls-container">
+        <h4>Scanning Options</h4>
+        <div class="form-group">
+          
+          <div class="col-sm-12">
+            <label for="ddDevices"><strong>Available Devices</strong></label>
+            <select id="ddDevices" class="form-control" [(ngModel)]="selectedDevice" (change)="deviceChange($event)">
+              <option [value]="'-1'">Select Device...</option>
+              <option *ngFor="let device of deviceItems" [value]="device.Id">{{device.Name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="chkShowUi" value="showUI" [(ngModel)]="showUI" />
+              <label class="form-check-label" for="chkShowUi">Show UI</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="chkAutoFeed" value="auto" [(ngModel)]="autoFeed" [disabled]="autoDisabled" />
+              <label class="form-check-label" for="chkAutoFeed">AutoFeed</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="chkDuplex" value="duplex" [(ngModel)]="duplex" [disabled]="duplexDisabled" />
+              <label class="form-check-label" for="chkDuplex">Duplex</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-12">
+            <strong style="margin-right: 10px;">Pixel Type:</strong>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="rbGray" value="gray" [(ngModel)]="pixelType" name="pixelType">
+              <label class="form-check-label" for="rbGray">Grayscale</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="rbColor" value="color" [(ngModel)]="pixelType" name="pixelType">
+              <label class="form-check-label" for="rbGray">Color</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="line-break"></div>
+          <div style="text-align: center;" class="col-sm-12">
+            <button class="btn btn-primary" style="width: 100%;" (click)="scanDocument()">
+              Scan</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="line-break"></div>
+          <div class="col-sm-12">
+            <input type="text" class="form-control" [(ngModel)]="filename" placeholder="Enter a file name" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="chkMultiPDF" value="pdf" [(ngModel)]="saveType" name="saveType" />
+              <label class="form-check-label" for="chkMultiPDF">Multi-Page PDF</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="chkMultiImage" [disabled]="true" value="img" [(ngModel)]="saveType" name="saveType" />
+              <label class="form-check-label" for="chkMultiImage">Multi-Page TIFF</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 10px;">
+          <div style="text-align: center;" class="col-sm-6">
+            <button class="btn btn-primary" style="width: 100%;" (click)="uploadDocument()">
+              Save Local</button>
+          </div>
+          <div style="text-align: center;" class="col-sm-6">
+            <button class="btn btn-primary" style="width: 100%;" (click)="uploadDocument()">
+              Upload</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <strong>Messages</strong>
+        <div class="controls-container" style="height: 150px; padding: 10px; overflow-y: scroll;">
+        <span innerHtml="{{infoMessages}}"></span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="scanning-background" *ngIf="showScanningMessage">
+  <div class="content">
+    <h4>Scanning....</h4>
+    <img src="../../assets/images/760.gif" />
+  </div>
+</div>
+
+<div class="scanning-background" *ngIf="showOCR">
+  <div class="content" style="width: 600px">
+    <div *ngIf="ocrText" style="text-align: left;">
+      {{ocrText}}
+      <button (click)="showOCR = false" class="btn btn-primary" style="width: 100%; margin-top: 20px">Close</button>
+    </div>
+    <div *ngIf="!ocrText">
+      <h4>Reading Image Text</h4>
+      <h5>{{ocrPercent | percent}} {{ocrStatus}}</h5>
+    </div>
+  </div>
+</div>
+
+<div class="scanning-background" *ngIf="needsInstall">
+  <div class="content" style="width: 600px" >
+    <h4>One Time Download Required</h4>
+    <div class="flex-icons">
+      <div class="icon">
+        <span class="material-icons">get_app</span><br />
+        Download
+      </div>
+      <div class="icon-div"></div>
+      <div class="icon">
+        <span class="material-icons">system_update_alt</span><br />
+        Install
+      </div>
+      <div class="icon-div"></div>
+      <div class="icon">
+        <span class="material-icons">scanner</span><br />
+        Scan
+      </div>
+    </div>
+    <button class="btn btn-primary">Download</button>
+    <p style="margin-top: 20px; font-size: .9rem;">After successful download and install.  Referesh screen to begin scanning.</p>
+  </div>
+</div>
+

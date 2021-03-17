@@ -1,0 +1,127 @@
+
+.container-fluid {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    @media (min-width: 1200px) {
+        padding-left: 200px;
+        padding-right: 200px;
+    }
+}
+
+.scanning-background {
+    background-color: rgba(0,0,0,.60);
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    .content { 
+        text-align: center;
+        background-color: white;
+        border-radius: 3px;
+        width: 400px;
+        border: solid 1pt silver;
+        padding: 20px;
+        position: relative;
+        z-index: 101;
+        margin-top: 20%;
+        margin-left: auto;
+        margin-right: auto;
+        .flex-icons {
+            display: flex;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            div {
+                width: 20%;
+                .material-icons {
+                    font-size: 38px;
+                    color: #007bff;
+                }
+            }
+            .icon-div {
+                border-top: solid 1pt silver;
+                margin-top: 20px;
+            }
+        }
+    }
+}
+
+
+
+.image-pager {
+    border: solid 1pt silver;
+    border-top: none;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: center;
+    .pager {
+        margin-left: 10%;
+        text-align: center;
+    }
+}
+
+.image-container {
+    display: flex;
+    .image-controls {
+        width: 80px;
+        border: solid 1pt silver;
+        border-bottom: none;
+        a {
+            font-size: .70rem;
+            border-bottom: solid 1pt silver;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            display: block;
+            &:hover {
+                background-color: royalblue;
+                color: white;
+                .material-icons {
+                    columns: white;
+                }
+            }
+        }
+        
+        a:last-child {
+            //border-bottom: none;
+        }
+
+        .material-icons {
+            color: silver;
+            font-size: 35px;
+        }
+        
+    }
+    .scanned-doc-container {
+        background-color: rgba(0,0,0,.3);
+        height: 200;
+        border:inset;
+        padding: 20px;
+        max-height: 100%;
+        height: 800px;
+        width: 100%;
+        position: relative;        
+    }
+}
+
+.controls-container {
+    border: solid 1pt silver;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    h4 {
+        background-color: silver;
+        margin: none;
+        padding: 10px;
+        color: white;
+        text-align: center;
+    }
+    .line-break {
+        border-top: solid 1pt silver;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
